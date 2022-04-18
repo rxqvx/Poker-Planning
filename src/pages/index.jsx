@@ -1,11 +1,7 @@
-// import styles from '../styles/Home.module.css'
-import CreateNick from '../components/NickInput'
-import RoomInput from '../components/RoomInput'
-export default function Home() {
+export default function HomePage() {
   return (
     <>
-      <CreateNick/>
-      <RoomInput/>
+           
     </>
   )
 }

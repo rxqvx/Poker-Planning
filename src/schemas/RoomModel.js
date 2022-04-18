@@ -1,10 +1,17 @@
 import mongoose, { Schema } from 'mongoose';
 
 const RoomSchema =  new Schema({
-
-    created_at : {
+    roomName: { 
+      type: String,
+      required: true
+    },
+    createdAt : {
       type:Date,
       required:true
+    },
+    cardName: {
+      type: String,
+      default: undefined
     }
   })
   

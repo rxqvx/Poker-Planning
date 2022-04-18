@@ -1,14 +1,22 @@
 import mongoose, { Schema } from 'mongoose';
 
 const UserSchema =  new Schema({
-    name:{
+    nameUser:{
         type: String,
         required: true,
     },
-    room_id: {
-        type:[Number],
+    roomUserName: {
+        type:String,
         required: true
+    },
+    isVoted:{
+        type: Boolean,
+        default: false
+    },
+    voteValue:{
+        type: Number,
+        default: undefined 
     }
   })
   
-export const User = mongoose.models.User || mongoose.model('User', RoomSchema);
+export const User = mongoose.models.User || mongoose.model('User', UserSchema);
