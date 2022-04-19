@@ -15,7 +15,11 @@ const UserSchema =  new Schema({
     },
     voteValue:{
         type: Number,
-        default: null
+        default: 0 
+    },
+    isAdmin:{
+        type: Boolean,
+        default: false
     }
   })
   

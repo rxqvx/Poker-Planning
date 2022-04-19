@@ -65,7 +65,29 @@ async function handler(req, res) {
         roomName: nameRoomPost,
         createdAt: (new Date().toLocaleString())
       })
+      // And make that user a admin
+      if(!await isUserCreated(nameUserPost,nameRoomPost)){
+        const user = await User.create({
+          nameUser: nameUserPost,
+          roomUserName: nameRoomPost,
+          isAdmin: true
+        })
+        return res.status(200).json({create:true})
+      }
     }
+    // if room is created but, no have any user, as he is the first he is the admin
+    const users = await usersInRoom(nameRoomPost)
+    if(users.length === 0){
+      if(!await isUserCreated(nameUserPost,nameRoomPost)){
+        const user = await User.create({
+          nameUser: nameUserPost,
+          roomUserName: nameRoomPost,
+          isAdmin: true
+        })
+        return res.status(200).json({create:true})
+      }
+    }
+
     // create a user in database if he doesn't in the room already
     if(!await isUserCreated(nameUserPost,nameRoomPost)){
         const user = await User.create({
@@ -76,6 +98,7 @@ async function handler(req, res) {
         // If he already exists in the room, throw a 404 ERROR
         res.status(404).send({error: "User already in the room"})
     }
+
     const roomA = await Room.find({roomName:nameRoomPost})
     const usersA = await User.find({nameUser:nameUserPost,roomUserName:nameRoomPost})
     // If is everything okay, he send a 200 HTTP status
