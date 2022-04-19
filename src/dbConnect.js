@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const MONGODB_URI = "mongodb+srv://root:d5wvc2oA2KMDrNrv@cluster0.pabag.mongodb.net/pp"
+const MONGODB_URI = "mongodb+srv://root:pZje0MrezMidJur0@cluster0.tu0eq.mongodb.net/pp"
 
   let cached = global.mongoose
 
