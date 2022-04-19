@@ -15,7 +15,7 @@ const UserSchema =  new Schema({
     },
     voteValue:{
         type: Number,
-        default: undefined 
+        default: null
     }
   })
   
