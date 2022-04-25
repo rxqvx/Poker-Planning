@@ -2,16 +2,18 @@ import React from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-import letz from '../../public/letz.svg';
+
+// Components
 import Input from './components/Input'
+import ArticleLetz from './components/ArticleLetz';
 
 
 export default function HomePage() {
   const [name, setName] = React.useState('');
-  const [nameError, setNameError] = React.useState();
+  const [nameError, setNameError] = React.useState<string>();
 
   const[room, setRoom] = React.useState('');
-  const[roomError, setRoomError] = React.useState();
+  const[roomError, setRoomError] = React.useState<string>();
 
   const router = useRouter();
   const {nickname, roomName} = router.query;
@@ -74,8 +76,10 @@ export default function HomePage() {
         try {
             const payload = { userName: name,  roomName: roomName};
   
-            await axios.post('/api/entryRoomUser', payload);
+            const {data} = await axios.post('/api/entryRoomUser', payload);
   
+            sessionStorage.setItem('users',JSON.stringify(data.users));
+            sessionStorage.setItem('room',JSON.stringify(data.room));
             window.open(`/room?roomName=${room}&nickname=${name}`, "_self");
         } catch(err) {
             console.log('erro ao enviar os dados', err);
@@ -83,23 +87,11 @@ export default function HomePage() {
   }
   if(!roomName){ 
     return (
-      <div className="light">
-        <div className="App">
-          <header className="header">          
-          </header>
-            <div className='container'>
-              <div className="row">
-                <div className="col-sm">
-                  <br></br>
-                  <img src={letz.src} className="App-logo" alt="logo" />
-                </div>
-                <div className="col-sm">
-                  <div className="balloon"> 
-                    <h1>Letz Poker Planning - Beta</h1>
-                  </div>
-                </div>
-              </div>
-              <br></br>
+      <>
+        <header className="linear-gradient">        
+        </header>
+            <section className='content'>
+              <ArticleLetz/>
               <form>
                 <div className="box-shadow">
                   <div className="left-margin">
@@ -123,36 +115,19 @@ export default function HomePage() {
                   </div>
                 </div>
               </form>
-            </div>
-          <div>
-            <footer className="rodape fixed">
-              
+            </section>
+            <footer className="linear-gradient fot-fix">             
             </footer>
-          </div>
-        </div>
-      </div>
-      
+      </>
     );
 
   }else if (!nickname){
     return (
-      <div className="light">
-        <div className="App">
-          <header className="header">          
+      <>
+          <header className="linear-gradient">          
           </header>
-            <div className='container'>
-              <div className="row">
-                <div className="col-sm">
-                  <br></br>
-                  <img src={letz.src} className="App-logo" alt="logo" />
-                </div>
-                <div className="col-sm">
-                  <div className="balloon"> 
-                    <h1>Letz Poker Planning - Beta</h1>
-                  </div>
-                </div>
-              </div>
-              <br></br>
+            <section className='content'>
+              <ArticleLetz/>
               <form>
                 <div className="box-shadow">
                   <div className="left-margin">
@@ -164,19 +139,14 @@ export default function HomePage() {
                       tip="Insira o apelido que será representado na sala." 
                       placeholder="Ex.: klougod" 
                     />
-                    <button onClick={submitNick} className="btn btn-primary">Confirmar</button>
+                    <button onClick={submit} className="btn btn-primary">Confirmar</button>
                   </div>
                 </div>
               </form>
-            </div>
-          <div>
-            <footer className="rodape fixed">
-              
-            </footer>
-          </div>
-        </div>
-      </div>
-      
+            </section>
+            <footer className="linear-gradient fot-fix">             
+            </footer>  
+      </>
     );
   }
 }
