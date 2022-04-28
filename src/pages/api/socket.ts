@@ -7,39 +7,40 @@ const socketController = (req , res) => {
     const io = new Server(res.socket.server)
     res.socket.server.io = io
 
+
     io.on('connection', async socket => {
       const socketHandler = new SocketHandler(socket);
-      var currentUser;
       await socketHandler.connectionDataBase();
 
+      const userName = socket.handshake.headers.username
+      const roomName = socket.handshake.headers.roomname
       socket.on('join-room', payload =>{
         socketHandler.joinRoom(payload)
-        const {user,room} = JSON.parse(payload)
-        currentUser = user;
-        socket.to(room.roomName).emit('user-joined', payload);
+        socket.to(roomName).emit('user-joined', payload);
       })
 
       socket.on('my-vote', async payload =>{
         await socketHandler.myVote(payload)
-        const {room} = JSON.parse(payload)
-        socket.to(room.roomName).emit('user-voted', payload);
+        socket.to(roomName).emit('user-voted', payload);
       })
 
 
-      socket.on('disconnect',async reason =>{
-        await socketHandler.exitRoom(JSON.stringify({currentUser}))
-        socket.to(currentUser.roomUserName).emit('user-disconnect',JSON.stringify(currentUser))
+      socket.on('disconnecting',async reason =>{
+        const payload = JSON.stringify({userName,roomName})
+        await socketHandler.exitRoom(payload)
+        socket.to(roomName).emit('user-disconnect',payload)
       })
 
-    //   socket.on('admin-show-vote',payload =>{
-    //     const {room} = JSON.parse(payload)
-    //     socket.to(room.roomName).emit('admin-shows');
-    //   })
-    //   socket.on('admin-reset-votes',async payload =>{
-    //     await socketHandler.adminResetVotes(payload)
-    //     const {room} = JSON.parse(payload);
-    //     socket.to(room.roomName).emit('admin-reseted',payload);
-    //   })
+
+      socket.on('admin-show-vote',() =>{
+        socket.to(roomName).emit('admin-shows');
+      })
+
+      socket.on('admin-reset-votes',async () =>{
+        await socketHandler.adminResetVotes(JSON.stringify({roomName}))
+        socket.to(roomName).emit('admin-reseted');
+      })
+
     //   socket.on('admin-change-card-vote',payload =>{
 
     //   })

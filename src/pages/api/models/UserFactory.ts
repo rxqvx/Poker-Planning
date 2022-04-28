@@ -30,7 +30,7 @@ export class UserFactory{
     }
     static async isUserInRoom(name:string,roomName:string) : Promise<boolean> {
         try{
-            if (await User.findOne({nameUser:name,roomUserName:roomName},'nameUser').exec() === null) {
+            if (await User.findOne({nameUser:name,roomUserName:roomName}).exec() === null) {
                 return false
             }
             return true

@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { dbConnect } from '../../../dbConnect';
-import { User } from '../../../schemas/UserModel';
+import { IUser,User } from '../../../schemas/UserModel';
 import { UserFactory } from './UserFactory';
 
 interface ISocket {
@@ -8,8 +8,7 @@ interface ISocket {
   joinRoom(payload: string): void;
   myVote(payload : string) : Promise<void>;
   exitRoom(payload: string) : void;
-//   adminShowVotes(payload : string ) : void;
-//   adminResetVotes(payload: string) : Promise<void>;
+  adminResetVotes(payload: string) : Promise<void>;
 //   adminChangedCard(payload : string) : void;
 }
 
@@ -31,20 +30,15 @@ export class SocketHandler implements ISocket {
   }
 
   exitRoom = async (payload : string) : Promise<void> => {
-    const { currentUser } = JSON.parse(payload)
-    await UserFactory.deleteUser(currentUser.nameUser, currentUser.roomUserName)
+    const {userName,roomName} = JSON.parse(payload)
+    await UserFactory.deleteUser(userName, roomName)
   }
 
-//   public adminShowVotes = async (payload : string ) : Promise<any> => {
-//     const {room} = JSON.parse(payload);
-//   }
-
-//   public adminResetVotes = async (payload : string) : Promise<void>=> {
-//     const {room} = JSON.parse(payload);
-//     const update = await User.updateMany({roomUserName:room.roomName},
-//           {isVoted:false,voteValue:0})
-
-//   }
+  adminResetVotes = async (payload : string) : Promise<void>=> {
+    const {roomName} = JSON.parse(payload);
+    const update = await User.updateMany({roomUserName:roomName},
+    {isVoted:false,voteValue:0})
+  }
 
 //   public adminChangedCard = (payload : string) : void => {
 //     const {isAdmin,room} = JSON.parse(payload);
