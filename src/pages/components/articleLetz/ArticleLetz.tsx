@@ -1,16 +1,17 @@
-import letz from '../../../public/letz.svg';
+import letz from '../../../../public/letz.svg';
 import React from 'react';
+import styles from './articleLetz.module.css'
 
-function ArticleLetz(){
+const ArticleLetz = () => {
     return(
         <>
-        <article className="article-letz">
+        <article className={styles.articleLetz}>
             <div className="row">
             <div className="col-sm">
                 <br></br>
                 <img src={letz.src} alt="logo" />
             </div>
-                <div className="balloon"> 
+                <div className={styles.balloon}>
                 <h1>Letz Poker Planning - Beta</h1>
             </div>
             </div>
