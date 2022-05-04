@@ -6,7 +6,7 @@ function App(){
     <Link href='/'>
       <a>Volte a homepage</a>
     </Link>
-    <p>É necessário ter inserido o nickname e o nome da sala para acessar as salas do Planning.</p>
+    <p>É necessário ter inserido o nickname <s>(e o nome da sala)</s> para acessar as salas do Planning.</p>
     </>
   )
 }

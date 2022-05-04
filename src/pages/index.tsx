@@ -51,7 +51,6 @@ const HomePage = () : JSX.Element =>  {
           sessionStorage.setItem('room',JSON.stringify(data.room));
           sessionStorage.setItem('myUser',JSON.stringify(data.myUser));
 
-        //   window.open(`/room?roomName=${room}&nameUser${name}`, "_self");
           window.open(`/UserRoom?roomName=${room}&nameUser=${name}`, "_self");
       } catch(err) {alert("Error in the request")}
   }

@@ -1,8 +1,10 @@
 import React from 'react';
-import styles from '../styles/AppUser.module.css';
+import styles from '../styles/userRoom.module.css';
 import CreateNewCard from './components/userCard/UserCard'
 import Card from './components/cardsFibonacci/CardFibonacci'
-import { useRouter } from 'next/router';
+import { IRoom } from '../schemas/RoomModel';
+import { IUser } from '../schemas/UserModel';
+import AdmControls from './components/admControls/AdmControls';
 const fibonnaciNumbers = ["1","2","3","5","8","13","21","34","55","?","-"]
 
 const getUsers = () => {
@@ -12,12 +14,12 @@ const getUsers = () => {
 }
 
 const getMyUser = () => {
-  const user =  JSON.parse(sessionStorage.getItem('users'));
+  const user =  JSON.parse(sessionStorage.getItem('myUser'));
 
   return user || {};
 }
 const getRoom = () => {
-  const room =  JSON.parse(sessionStorage.getItem('users'));
+  const room =  JSON.parse(sessionStorage.getItem('room'));
 
   return room || {};
 }
@@ -25,11 +27,8 @@ function App() {
   const [toogle, setToogle] = React.useState(false);
   const [cor, setCor] = React.useState('#f3f3f3');
   const [users, setUsers] = React.useState([]);
-  const [room,setRoom] = React.useState({})
-  const [myUser,setMyUser] = React.useState({})
-
-  const router = useRouter();
-  const {roomName,nameUser} = router.query;
+  const [room,setRoom] = React.useState<IRoom>()
+  const [myUser,setMyUser] = React.useState<IUser>()
     // nameUser:String,  
     // roomUserName: String,
     // isVoted: boolean,
@@ -42,27 +41,24 @@ function App() {
         setUsers(getUsers())
         setMyUser(getMyUser())
     },[]);
-
-
   
-  
-  // const handleClick = event => {
-  //   //vai pegar o valor que clicou
-  //   const value = event.target.value;
+  const handleClick = event => {
+    //vai pegar o valor que clicou
+    const value = event.target.value;
 
-  //   console.log('clicked vote: ', value)
+    console.log('clicked vote: ', value)
 
-  //   // novo map de users atualizado
-  //   const newUsers = users.map(user => {
-  //     //se o nome de usuario dos usuarios presentes da sala for igual o meu que receberei do back, vai setar o novo valor do voto pra minha carta, da carta que eu clickei
-  //     console.log(user.voteValue);
-  //     return {...user, voteValue: value, isVoted: true}
-  //   })
+    // novo map de users atualizado
+    // const newUsers = users.map(user => {
+    //   //se o nome de usuario dos usuarios presentes da sala for igual o meu que receberei do back, vai setar o novo valor do voto pra minha carta, da carta que eu clickei
+    //   console.log(user.voteValue);
+    //   return {...user, voteValue: value, isVoted: true}
+    // })
 
-  //   console.log(newUsers);
+    // console.log(newUsers);
 
-  //   setUsers(newUsers);
-  // }
+    // setUsers(newUsers);
+  }
 
 
   React.useEffect(() => {
@@ -82,18 +78,17 @@ function App() {
           </header>          
           <div className={styles.baloonRowUser}>
             <div className={styles.baloonUser}> 
-              <h1>Sala: {roomName}</h1>
+            <h1>Sala: {room?.roomName || ''}</h1>
             </div>
             <div className={styles.baloonUser}> 
-              <h1>User: {nameUser} (me)</h1>
+              <h1>User: {myUser?.nameUser || ''} (me)</h1>
             </div>
           </div>
         <div className={styles.blankGambiarra}>
           {/* essa secao abaixo é pra apresentar as cartas de fibonacci */}
           <section className={styles.divCardsUser}>
               {fibonnaciNumbers.map(value =>(
-                <Card key={value} voteValue={value}/>
-                // <Card key={value} onClick={handleClick} voteValue={value}/>
+                <Card key={value} onClick={handleClick} voteValue={value}/>
               ))}
           </section>
           {/* essa secao abaixo apresenta as cartas dos users */}
@@ -103,13 +98,14 @@ function App() {
             {users.map((user, i)=> <CreateNewCard key={i} showVotes={true} userName={user.nameUser} voteValue={user.voteValue} />)}
             
           </section>
-
+          <AdmControls/>
         </div>
         {/* <footer className="rodapeRoomUser fixedUser"/> */}
         <footer className={styles.rodapeRoomUserfixedUser}/>
       </div>
+
     </div>
-    
+
   );
   
 }

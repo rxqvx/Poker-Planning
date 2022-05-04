@@ -3,18 +3,15 @@ import { FC, MouseEvent } from 'react';
 import styles from './cardFibonacci.module.css'
 
 interface ICardProps {
-    // onClick(e: MouseEvent<HTMLButtonElement>): void;
+    onClick(e: MouseEvent<HTMLButtonElement>): void;
     voteValue: string;
 }
 
-const Card: FC<ICardProps> = ({voteValue }) => {
+const Card: FC<ICardProps> = ({onClick,voteValue }) => {
     return (
-        <button value={voteValue} className={styles.buttonCardUser}>
+        <button onClick={onClick} value={voteValue} className={styles.buttonCardUser}>
             {voteValue}
-        </button>
-        /* <button onClick={onClick} value={voteValue} className={styles.buttonCardUser}>
-            {voteValue}
-        </button> */ 
+        </button> 
     )
 }
 
