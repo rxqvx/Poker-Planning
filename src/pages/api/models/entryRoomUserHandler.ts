@@ -46,9 +46,6 @@ export class handlerAPI implements IHandler{
     return await UserFactory.deleteUser(userName,roomName);
   }
 
-  async getUserInRoom(userName: string,roomName: string) : Promise<IUser>{
-      return await UserFactory.getUser(userName,roomName);
-  }
   async getUsersInRoom(roomName: string) : Promise<IUser[]>{
     return await UserFactory.getUsersInRoom(roomName);
   }

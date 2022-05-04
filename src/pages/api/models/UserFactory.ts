@@ -38,14 +38,6 @@ export class UserFactory{
             return false;
         }
     }
-
-    static async getUser(name:string,roomName:string) : Promise<IUser>{
-        try{
-            return await User.findOne({nameUser:name,roomUserName:roomName}).exec();
-        }catch(e){
-            return null
-        }
-    }
 }
 
 
