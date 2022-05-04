@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document{
-    nameUser:String,
-    roomUserName: String,
+    nameUser:string,
+    roomUserName: string,
     isVoted: boolean,
     voteValue: number,
     isAdmin: boolean
