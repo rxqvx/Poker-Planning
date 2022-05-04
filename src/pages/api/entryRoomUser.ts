@@ -24,13 +24,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             if(await handler.addUserInRoom(userName, roomName)){
                 const users = await handler.getUsersInRoom(roomName)
                 const room = await handler.getRoom(roomName)
-                return res.status(201).json({users:users,room:room})
+                const user = await handler.getUserInRoom(userName,roomName)
+                return res.status(201).json({myUser:user,users:users,room:room})
             }
             return res.status(404).send({message:"Can't add user in room"})
         }
         const room = await handler.createRoomAndAdmin(userName,roomName)
         const users = await handler.getUsersInRoom(roomName)
-        return res.status(201).json({users,room})
+        const user = await handler.getUserInRoom(userName,roomName)
+        return res.status(201).json({myUser:user,users:users,room:room})
     }catch(e){
         res.status(404).send({message:e.message})
     }

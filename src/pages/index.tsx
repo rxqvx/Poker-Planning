@@ -49,8 +49,9 @@ const HomePage = () : JSX.Element =>  {
           const { data } = await axios.post('/api/entryRoomUser', payload);
           sessionStorage.setItem('users',JSON.stringify(data.users));
           sessionStorage.setItem('room',JSON.stringify(data.room));
+          sessionStorage.setItem('myUser',JSON.stringify(data.myUser));
 
-          window.open(`/room?roomName=${room}&nameUser${name}`, "_self");
+        //   window.open(`/room?roomName=${room}&nameUser${name}`, "_self");
       } catch(err) {alert("Error in the request")}
   }
   const submitOnlyNick = async () : Promise<any> => {
