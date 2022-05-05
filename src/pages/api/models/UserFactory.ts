@@ -45,6 +45,17 @@ export class UserFactory{
             return null;
         }
     }
+    static async changeAdmin(name:string,roomUserName:string) : Promise<void>{
+        try{
+            await this.deleteUser(name,roomUserName)
+            const users = await this.getUsersInRoom(roomUserName)
+            await User.updateOne(
+                {nameUser:users[0].nameUser,roomUserName:users[0].roomUserName},
+                {isAdmin:true})
+        }catch(e){
+            return null
+        }
+    }
  }
 
 

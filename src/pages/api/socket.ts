@@ -12,38 +12,46 @@ const socketController = (req , res) => {
       const socketHandler = new SocketHandler(socket);
       await socketHandler.connectionDataBase();
 
-      const userName = socket.handshake.headers.username
-      const roomName = socket.handshake.headers.roomname
+      const user = socket.handshake.headers.user
+      if(typeof user !== 'string') return res.end()
+      const { roomUserName,isAdmin } = JSON.parse(user)
+
+
       socket.on('join-room', payload =>{
-        socketHandler.joinRoom(payload)
-        socket.to(roomName).emit('user-joined', payload);
+        socket.join(roomUserName)
+        socket.to(roomUserName).emit('user-joined', payload);
       })
 
       socket.on('my-vote', async payload =>{
         await socketHandler.myVote(payload)
-        socket.to(roomName).emit('user-voted', payload);
+        socket.to(roomUserName).emit('user-voted', payload);
       })
 
 
       socket.on('disconnecting',async reason =>{
-        const payload = JSON.stringify({userName,roomName})
-        await socketHandler.exitRoom(payload)
-        socket.to(roomName).emit('user-disconnect',payload)
+        if(isAdmin){
+            const payload = JSON.stringify(await socketHandler.changeAdmin(user))
+            socket.to(roomUserName).emit('admin-disconnect',payload)
+        }
+        else{
+            const payload = user
+            socket.to(roomUserName).emit('user-disconnect',payload)
+            await socketHandler.exitRoom(payload)
+        }
       })
 
-
       socket.on('admin-show-vote',() =>{
-        socket.to(roomName).emit('admin-shows');
+        socket.to(roomUserName).emit('admin-shows');
       })
 
       socket.on('admin-reset-votes',async () =>{
-        await socketHandler.adminResetVotes(JSON.stringify({roomName}))
-        socket.to(roomName).emit('admin-reseted');
+        await socketHandler.adminResetVotes(JSON.stringify({user}))
+        socket.to(roomUserName).emit('admin-reseted');
       })
 
-    //   socket.on('admin-change-card-vote',payload =>{
+      socket.on('admin-change-card-vote',payload =>{
 
-    //   })
+      })
     })
   }
   res.end()
