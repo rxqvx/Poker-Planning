@@ -54,6 +54,7 @@ const HomePage = () : JSX.Element =>  {
           window.open(`/UserRoom?roomName=${room}&nameUser=${name}`, "_self");
       } catch(err) {alert("Error in the request")}
   }
+
   const submitOnlyNick = async () : Promise<any> => {
     if(!name || name.length < 2) {
         setNameError('*Obrigatório e no Mínimo de 2 caracteres');
@@ -67,6 +68,7 @@ const HomePage = () : JSX.Element =>  {
         window.open(`/UserRoom?roomName=${roomName}&nameUser=${name}`, "_self");
     } catch(err) {alert("Error in the request")}
   }
+
   if(!roomName){
     return (
       <>
