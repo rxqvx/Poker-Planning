@@ -7,7 +7,6 @@ const socketController = (req , res) => {
     const io = new Server(res.socket.server)
     res.socket.server.io = io
 
-
     io.on('connection', async socket => {
       const socketHandler = new SocketHandler(socket);
       await socketHandler.connectionDataBase();
@@ -15,7 +14,6 @@ const socketController = (req , res) => {
       const user = socket.handshake.headers.user
       if(typeof user !== 'string') return res.end()
       const { roomUserName,isAdmin } = JSON.parse(user)
-
 
       socket.on('join-room', payload =>{
         socket.join(roomUserName)
@@ -27,7 +25,6 @@ const socketController = (req , res) => {
         console.log("payload do my-vote\n",payload);
         socket.to(roomUserName).emit('user-voted', payload);
       })
-
 
       socket.on('disconnecting',async reason =>{
         if(isAdmin){

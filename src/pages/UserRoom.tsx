@@ -84,7 +84,7 @@ const socketInitializer = async () => {
     })
   })
 
-  socket.emit('my-vote', JSON.stringify(myUser))
+
   
   socket.on('user-voted', payload => {
     const userVoted = JSON.parse(payload)
@@ -94,7 +94,6 @@ const socketInitializer = async () => {
       if(u.nameUser === userVoted.nameUser){
         return {...u, voteValue: userVoted.voteValue, isVoted: true}
       }
-
       return u;
     }))
 
@@ -116,7 +115,7 @@ const socketInitializer = async () => {
 
 
 React.useEffect(()=>{
-  if(room){
+  if(myUser && room){
     socketInitializer()
   }
 
@@ -128,7 +127,7 @@ React.useEffect(()=>{
     socket?.off('admin-shows');
     socket?.off('admin-reset-votes');
   }
-},[room]);
+},[myUser, room]);
 //-----------socketFim-------------------
 
   const handleClick = event => {
@@ -138,6 +137,8 @@ React.useEffect(()=>{
     console.log('clicked vote: ', value)
 
     setMyUser({...myUser, voteValue: parseInt(value), isVoted: true} as any)
+
+    socket.emit('my-vote', JSON.stringify(myUser))
   }
 
 
