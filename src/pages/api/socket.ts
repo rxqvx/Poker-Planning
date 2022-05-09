@@ -24,6 +24,7 @@ const socketController = (req , res) => {
 
       socket.on('my-vote', async payload =>{
         await socketHandler.myVote(payload)
+        console.log("payload do my-vote\n",payload);
         socket.to(roomUserName).emit('user-voted', payload);
       })
 
@@ -31,6 +32,7 @@ const socketController = (req , res) => {
       socket.on('disconnecting',async reason =>{
         if(isAdmin){
             const payload = JSON.stringify(await socketHandler.changeAdmin(user))
+            console.log("Admin saiu"+payload)
             socket.to(roomUserName).emit('admin-disconnect',payload)
         }
         else{
@@ -46,6 +48,7 @@ const socketController = (req , res) => {
 
       socket.on('admin-reset-votes',async () =>{
         await socketHandler.adminResetVotes(JSON.stringify({user}))
+        
         socket.to(roomUserName).emit('admin-reseted');
       })
 
