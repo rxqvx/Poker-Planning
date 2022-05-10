@@ -21,3 +21,16 @@
     outline: none;
     box-shadow: 0 0 1em rgba(24, 24, 24, 0.8);
 }
+
+.blockedButtonCardUser{
+    border-radius:10px;
+    border: none;
+    border: 3px #f185ff solid;
+    transition: 200ms ease-in-out transform;
+    background-color: #740083;
+    outline: none;
+    width: 80px;
+    height: 110px;
+    font-size: 30px;
+    color:#ee71ff;
+}

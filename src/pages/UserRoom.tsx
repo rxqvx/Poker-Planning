@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateNewCard from './components/userCard/UserCard'
+import UserCard from './components/userCard/UserCard'
 import Card from './components/cardsFibonacci/CardFibonacci'
 import { IRoom } from '../schemas/RoomModel';
 import { IUser } from '../schemas/UserModel';
@@ -32,6 +32,7 @@ const getRoom = () => {
   return room || {};
 }
 function App() {
+  const [disable, setDisable] = React.useState(false);
   const [showVotes, setShowVotes] = React.useState(false);
   const [toogle, setToogle] = React.useState(false);
   const [cor, setCor] = React.useState('#f3f3f3');
@@ -43,7 +44,7 @@ function App() {
     // isVoted: boolean,
     // voteValue: number,
     // isAdmin: boolean
-
+  // console.log("users: " + JSON.stringify(users));
   React.useEffect(()=>{
     setRoom(getRoom())
     setUsers(getUsers())
@@ -63,59 +64,78 @@ const socketInitializer = async () => {
   
   socket.on('user-joined', payload =>{
     const  newUserJoined  = JSON.parse(payload);
-    // usersSpush(newUserJoined);
-    setUsers(oldUsers => [...oldUsers,newUserJoined])
+
+    setUsers(oldUsers => {
+      const filteredUsers = oldUsers.filter(u => u.nameUser !== newUserJoined.nameUser);
+
+      return [...filteredUsers, newUserJoined];
+    })
   })
 
+  // socket.emit('disconnecting')
+
   socket.on('user-disconnect', payload =>{
-    const newUser = JSON.parse(payload);
-    // users.filter((Users) => Users !== user);
-    setUsers(newUser);
+    const deletedUser = JSON.parse(payload);
+    console.log("payload do user-disconnect: " + payload)
+    setUsers(oldUsers => oldUsers.filter(u => u.nameUser !== deletedUser.nameUser));
 
   })
 
   socket.on('admin-disconnect',(payload : string) => {
-    const newUsers = JSON.parse(payload)
-    setUsers(newUsers)
-    newUsers.forEach(u => {
-        if(u.nameUser === myUser.nameUser){
-            setMyUser(u);
-        }
-    })
+    // console.log("payload do admin-disconnect", payload)
+    const newUsersSemOlderAdmin = JSON.parse(payload);
+    setUsers(newUsersSemOlderAdmin);
+    console.log("newUsersSemOlderAdmin" ,newUsersSemOlderAdmin)
+    if(newUsersSemOlderAdmin.map (u =>{
+      if(u.nameUser===myUser.nameUser){
+        setMyUser(u);
+        // console.log("u:",u)
+        // console.log("myUser, agora virou admin: " + JSON.stringify(myUser));
+      }
+    }))
+    console.log("Admin saiu, payload:"+payload)
   })
 
 
   
   socket.on('user-voted', payload => {
+    console.log("userVoted: " + payload)
+
     const userVoted = JSON.parse(payload)
-    console.log("userVoted: " + userVoted)
+
+    if(!userVoted) return;
 
     setUsers(oldUsers => oldUsers.map(u => {
       if(u.nameUser === userVoted.nameUser){
-        return {...u, voteValue: userVoted.voteValue, isVoted: true}
+        return {...u, voteValue: userVoted.voteValue, isVoted: userVoted.voteValue !== '-'}
       }
       return u;
-    }))
-
-    
+    }));
   });
 
   // socket.emit('admin-show-vote',JSON.stringify(users.filter((User) => User.isAdmin==true)))
 
   socket.on('admin-shows', () =>{
     setShowVotes(true);
-    console.log("mostrou os votos")
+    setDisable(true);
+    console.log("O admin mostrou os votos")
   })
-  socket.on('admin-reset-votes', () =>{
+  socket.on('admin-reseted', () =>{
     setShowVotes(false);
-    console.log("resetou os votos");
+    setDisable(false);
+    setUsers(oldUsers => oldUsers.map(u => {
+      return {...u, voteValue: '-', isVoted: false}
+  }));
+    console.log("O admin resetou os votos");
   })
+
+  // socket.emit('selected-card', users);
 }
 
 
 
 React.useEffect(()=>{
-  if(myUser && room){
+  if(room){
     socketInitializer()
   }
 
@@ -125,30 +145,41 @@ React.useEffect(()=>{
     socket?.off('admin-disconnect');
     socket?.off('user-voted');
     socket?.off('admin-shows');
-    socket?.off('admin-reset-votes');
+    socket?.off('admin-reseted');
   }
-},[myUser, room]);
+},[room]);
 //-----------socketFim-------------------
 
   const handleClick = event => {
     //vai pegar o valor que clicou
     const value = event.target.value;
 
-    console.log('clicked vote: ', value)
+    const newMyUser = {...myUser, voteValue: (value), isVoted: true} as any
 
-    setMyUser({...myUser, voteValue: parseInt(value), isVoted: true} as any)
+    setMyUser(newMyUser)
+    
+    setUsers(users.map(mu => {
+      if(mu.nameUser === myUser.nameUser){
+        return {...mu, voteValue: (value), isVoted: (value !== '-')}
+        
+      }
+      return mu;
+    }))
 
-    socket.emit('my-vote', JSON.stringify(myUser))
+    socket.emit('my-vote', JSON.stringify(newMyUser))
+
+  }
+
+  const emitAdminVote = (show: boolean) => {
+    setShowVotes(show)
+    setDisable(true);
+    socket.emit(show ? 'admin-show-vote' : 'admin-reset-votes');
   }
 
 
   React.useEffect(() => {
     setCor(toogle ? '#f3f3f3': '#414141');
   }, [toogle]);
-
-  React.useEffect(() => {
-    console.log(myUser)
-  }, [myUser]);
 
   return (
     <div className={styles.bodyUser}>
@@ -173,17 +204,18 @@ React.useEffect(()=>{
           {/* essa secao abaixo é pra apresentar as cartas de fibonacci */}
           <section className={styles.divCardsUser}>
               {fibonnaciNumbers.map(value =>(
-                <Card key={value} onClick={handleClick} voteValue={value}/>
+                <Card key={value} onClick={handleClick} voteValue={value} disable = {disable}/>
               ))}
           </section>
           {/* essa secao abaixo apresenta as cartas dos users */}
           <section className={styles.sectionUserCardsUser}>
 
             {/* imprime as cartas dos usuarios */}
-            {users.map((user, i)=> <CreateNewCard key={i} showVotes={showVotes} userName={user.nameUser} voteValue={user.voteValue} />)}
+            {users.map((user, i)=> <UserCard key={i} showVotes={showVotes} userName={user.nameUser} voteValue={user.voteValue} isVoted={user.isVoted} />)}
             
           </section>
-          {myUser?.isAdmin ? <AdmControls setShowVotes={setShowVotes}  /> : null}
+          
+          {myUser?.isAdmin ? <AdmControls setShowVotes={emitAdminVote} setUsers={setUsers} setDisable={setDisable}/> : null}
           
         </div>
         {/* <footer className="rodapeRoomUser fixedUser"/> */}

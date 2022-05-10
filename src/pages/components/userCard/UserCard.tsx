@@ -14,7 +14,9 @@ export default function CreateNewCard(props){
               
               
               <div className={styles.userCardDivUser}>
-                <span className={styles.BackCardUser}/>
+                {/* <span className={styles.BackCardUser}/> */}
+                <span className={`${props.isVoted ? styles.clickedBackCardUser : styles.BackCardUser}`}/>
+                
               </div>
 
             </div>

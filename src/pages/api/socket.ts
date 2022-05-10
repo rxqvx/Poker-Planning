@@ -22,14 +22,14 @@ const socketController = (req , res) => {
 
       socket.on('my-vote', async payload =>{
         await socketHandler.myVote(payload)
-        console.log("payload do my-vote\n",payload);
+        // console.log("payload do my-vote\n",payload);
         socket.to(roomUserName).emit('user-voted', payload);
       })
 
       socket.on('disconnecting',async reason =>{
         if(isAdmin){
             const payload = JSON.stringify(await socketHandler.changeAdmin(user))
-            console.log("Admin saiu"+payload)
+            
             socket.to(roomUserName).emit('admin-disconnect',payload)
         }
         else{
@@ -52,6 +52,10 @@ const socketController = (req , res) => {
       socket.on('admin-change-card-vote',payload =>{
 
       })
+
+      // socket.on('selected-card', payload =>{
+      //   socket.to(roomUserName).emit('colored-selected-card');
+      // })
     })
   }
   res.end()
