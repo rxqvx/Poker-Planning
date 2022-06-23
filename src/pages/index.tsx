@@ -1,152 +1,124 @@
-import React from 'react';
+// Library's
+import React,{useState} from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
-
+import { NextRouter, useRouter } from 'next/router';
 
 // Components
-import Input from './components/Input'
-import ArticleLetz from './components/ArticleLetz';
+import Input from './components/inputHome/InputHome'
+import ArticleLetz from './components/articleLetz/ArticleLetz';
+import HeaderHome from './components/headerHome/HeaderHome'
+import InputSection from './components/inputSection/InputSection'
+import FooterHome from './components/footerHome/FooterHome'
+import ContentHome from './components/contentHome/ContentHome'
 
 
-export default function HomePage() {
-  const [name, setName] = React.useState('');
-  const [nameError, setNameError] = React.useState<string>();
+const HomePage = () : JSX.Element =>  {
+  const [name, setName] = useState<string>('');
+  const [nameError, setNameError] = useState<string>('');
 
-  const[room, setRoom] = React.useState('');
-  const[roomError, setRoomError] = React.useState<string>();
+  const[room, setRoom] = useState<string>('');
+  const[roomError, setRoomError] = useState<string>('');
 
-  const router = useRouter();
-  const {nickname, roomName} = router.query;
+  const router : NextRouter = useRouter();
+  const { roomName } = router.query;
 
-  
-  const handleNameChange = (e) => {
+  const handleNameChange = (e : React.ChangeEvent<HTMLInputElement>) : void => {
       if(e.target.value) {
           setNameError(undefined);
       }
       setName(e.target.value);
   }
-
-  const handleRoomChange = (ev) => {
-    if(ev.target.value) {
+  const handleRoomChange = (e: React.ChangeEvent<HTMLInputElement>) : void => {
+    if(e.target.value) {
         setRoomError(undefined);
     }
-    setRoom(ev.target.value);
+    setRoom(e.target.value);
   }
-  const submit = async (e) => {//tratamento de dados/erros
-      e.preventDefault();
 
-      if(!name) {
-          setNameError('*Obrigatório');
-          return;
-      }
-      if(!room) {
-        setRoomError('*Obrigatório');
+  const submitNickAndRoom = async () : Promise<any> => {
+      if(!name || name.length < 2) {
+        setNameError('*Obrigatório e no Mínimo de 2 caracteres');
         return;
       }
-      if(name.length < 2) {
-          setNameError('Mínimo de 2 caracteres');
-          return;
-      }
-      if(room.length < 2) {
-        setRoomError('Mínimo de 2 caracteres');
+      if(!room || room.length < 2) {
+        setRoomError('*Obrigatório e no Mínimo de 2 caracteres');
         return;
-    }
+      }
       try {
           const payload = { userName: name,  roomName: room };
+          const { data } = await axios.post('/api/entryRoomUser', payload);
+          sessionStorage.setItem('users',JSON.stringify(data.users));
+          sessionStorage.setItem('room',JSON.stringify(data.room));
+          sessionStorage.setItem('myUser',JSON.stringify(data.myUser));
 
-          await axios.post('/api/entryRoomUser', payload);
+          window.open(`/UserRoom?roomName=${room}&nameUser=${name}`, "_self");
+      } catch(err) {alert("Error in the request")}
+  }
 
-          window.open(`/room?roomName=${room}&nickname=${name}`, "_self");
-      } catch(err) {
-          console.log('erro ao enviar os dados', err);
-      }
+  const submitOnlyNick = async () : Promise<any> => {
+    if(!name || name.length < 2) {
+        setNameError('*Obrigatório e no Mínimo de 2 caracteres');
+        return;
     }
-
-  const submitNick = async (e) => {//tratamento de dados/erros
-        e.preventDefault();
-  
-        if(!name) {
-            setNameError('*Obrigatório');
-            return;
-        }
-        if(name.length < 2) {
-            setNameError('Mínimo de 2 caracteres');
-            return;
-        }
-        try {
-            const payload = { userName: name,  roomName: roomName};
-  
-            const {data} = await axios.post('/api/entryRoomUser', payload);
-  
-            sessionStorage.setItem('users',JSON.stringify(data.users));
-            sessionStorage.setItem('room',JSON.stringify(data.room));
-            window.open(`/room?roomName=${room}&nickname=${name}`, "_self");
-        } catch(err) {
-            console.log('erro ao enviar os dados', err);
-        }
+    try {
+        const payload = { userName: name,  roomName: roomName};
+        const { data } = await axios.post('/api/entryRoomUser', payload);
+        sessionStorage.setItem('users',JSON.stringify(data.users));
+        sessionStorage.setItem('room',JSON.stringify(data.room));
+        window.open(`/UserRoom?roomName=${roomName}&nameUser=${name}`, "_self");
+    } catch(err) {alert("Error in the request")}
   }
-  if(!roomName){ 
-    return (
-      <>
-        <header className="linear-gradient">        
-        </header>
-            <section className='content'>
-              <ArticleLetz/>
-              <form>
-                <div className="box-shadow">
-                  <div className="left-margin">
-                    <Input 
-                      label="Nickname"
-                      value={name} 
-                      onChange={handleNameChange} 
-                      error={nameError} 
-                      tip="Insira o apelido que será representado na sala." 
-                      placeholder="Ex.: klougod" 
-                    />
-                    <Input 
-                      label="Sala"
-                      value={room} 
-                      onChange={handleRoomChange} 
-                      error={roomError} 
-                      tip="Digite o nome da sala." 
-                      placeholder="Ex.: Tech Review" 
-                    />
-                    <button onClick={submit} className="btn btn-primary">Confirmar</button>
-                  </div>
-                </div>
-              </form>
-            </section>
-            <footer className="linear-gradient fot-fix">             
-            </footer>
-      </>
-    );
 
-  }else if (!nickname){
+  if(!roomName){
     return (
       <>
-          <header className="linear-gradient">          
-          </header>
-            <section className='content'>
-              <ArticleLetz/>
-              <form>
-                <div className="box-shadow">
-                  <div className="left-margin">
-                    <Input 
-                      label="Nickname"
-                      value={name} 
-                      onChange={handleNameChange} 
-                      error={nameError} 
-                      tip="Insira o apelido que será representado na sala." 
-                      placeholder="Ex.: klougod" 
-                    />
-                    <button onClick={submit} className="btn btn-primary">Confirmar</button>
-                  </div>
-                </div>
-              </form>
-            </section>
-            <footer className="linear-gradient fot-fix">             
-            </footer>  
+        <HeaderHome/>
+        <ContentHome>
+            <ArticleLetz/>
+            <InputSection>
+                <Input
+                    label="Nickname"
+                    value={name}
+                    onChange={handleNameChange}
+                    error={nameError}
+                    tip="Insira o apelido que será representado na sala."
+                    placeholder="Ex.: klougod"
+                />
+                <Input
+                    label="Sala"
+                    value={room}
+                    onChange={handleRoomChange}
+                    error={roomError}
+                    tip="Digite o nome da sala."
+                    placeholder="Ex.: Tech Review"
+                />
+            <button onClick={submitNickAndRoom}className="btn btn-primary">Confirmar</button>
+            </InputSection>
+        </ContentHome>
+        <FooterHome/>
       </>
     );
   }
+  return (
+    <>
+    <HeaderHome/>
+    <ContentHome>
+        <ArticleLetz/>
+        <InputSection>
+            <Input
+                label="Nickname"
+                value={name}
+                onChange={handleNameChange}
+                error={nameError}
+                tip="Insira o apelido que será representado na sala."
+                placeholder="Ex.: klougod"
+            />
+            <button onClick={submitOnlyNick} className="btn btn-primary">Confirmar</button>
+        </InputSection>
+    </ContentHome>
+    <FooterHome/>
+    </>
+  );
 }
+
+export default HomePage;

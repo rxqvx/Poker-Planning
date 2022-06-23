@@ -1,0 +1,5 @@
+.linearGradient {
+    width:100%;
+    padding:1% 1%;
+    background-image: linear-gradient(to right, rgb(149, 179, 255), rgba(	189, 143, 255 ,1));
+  }
