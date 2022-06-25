@@ -4,7 +4,7 @@ import Card from './components/cardsFibonacci/CardFibonacci'
 import { IRoom } from '../schemas/RoomModel';
 import { IUser } from '../schemas/UserModel';
 import AdmControls from './components/admControls/AdmControls';
-
+import DarkMode from './components/SwitchMode/DarkMode';
 import styles from '../styles/userRoom.module.css'
 // import '../styles/userRoom.module.css'
 
@@ -32,39 +32,26 @@ const getRoom = () => {
   return room || {};
 }
 function App() {
+  let darkTheme;
+  let color;
+  if (typeof window !== 'undefined') {
+    color = localStorage.getItem('color')
+    darkTheme = localStorage.getItem('themeDark')
+  }
+  // console.log("darkteme: ", darkTheme)
   const [disable, setDisable] = React.useState(false);
   const [showVotes, setShowVotes] = React.useState(false);
-  const [toogle, setToogle] = React.useState(false);
+  const [darkMode, setDarkMode] = React.useState(darkTheme);
   const [users, setUsers] = React.useState([]);
   const [room, setRoom] = React.useState<IRoom>()
   const [myUser, setMyUser] = React.useState<IUser>()
+  const [cor, setCor] = React.useState(color);
 
-  const [theme, setTheme] = React.useState('');
-  const [cor, setCor] = React.useState('#414141');
-
-  if (typeof window !== 'undefined') {
-    const tema = localStorage.getItem('theme')
-    setTheme(tema)
-    console.log('theme: ', theme)
-  }
-  // if (theme === 'light') {
-  //   setCor('#f3f3f3')
-  // }
-  // if (theme === 'dark') {
-  //   setCor('#414141')
-  // }
   React.useEffect(() => {
-    // setCor(toogle ? '#f3f3f3' : '#414141');
-    setCor(toogle ? '#f3f3f3' : '#414141');
-    // if (typeof window !== 'undefined') {
-    //   if (cor === "#f3f3f3") {
-    //     localStorage.setItem("theme", "light")
-    //   }
-    //   if (cor === "#414141") {
-    //     localStorage.setItem("theme", "dark")
-    //   }
-    // }
-  }, [toogle]);
+    setCor(darkMode ? '#414141' : '#f3f3f3');
+    localStorage.setItem('themeDark', darkMode)
+    localStorage.setItem('color', cor)
+  }, [darkMode]);
 
   React.useEffect(() => {
     setRoom(getRoom())
@@ -118,8 +105,6 @@ function App() {
       }))
         console.log("Admin saiu, payload:" + payload)
     })
-
-
 
     socket.on('user-voted', payload => {
       console.log("userVoted: " + payload)
@@ -205,8 +190,8 @@ function App() {
         <header className={styles.headerRoomUser}>
 
           <div>
-            <input type="checkbox" id={styles.toggleUser} checked={!toogle} onChange={() => setToogle(state => !state)} />
-            <label onClick={() => setToogle(state => !state)} htmlFor="toggleUser" className={styles.buttonUser} />
+            <input type="checkbox" id={styles.toggleUser} checked={!darkMode} onChange={() => setDarkMode(state => !state)} />
+            <label onClick={() => setDarkMode(state => !state)} htmlFor="toggleUser" className={styles.buttonUser} />
           </div>
 
         </header>
