@@ -4,14 +4,11 @@ import Card from './components/cardsFibonacci/CardFibonacci'
 import { IRoom } from '../schemas/RoomModel';
 import { IUser } from '../schemas/UserModel';
 import AdmControls from './components/admControls/AdmControls';
-import DarkMode from './components/SwitchMode/DarkMode';
 import styles from '../styles/userRoom.module.css'
-// import '../styles/userRoom.module.css'
 
 import io, { Socket } from 'socket.io-client'
 
 let socket;
-
 
 const fibonnaciNumbers = ["1", "2", "3", "5", "8", "13", "21", "34", "55", "?", "-"]
 
@@ -107,7 +104,7 @@ function App() {
     })
 
     socket.on('user-voted', payload => {
-      console.log("userVoted: " + payload)
+      // console.log("userVoted: " + payload)
 
       const userVoted = JSON.parse(payload)
 
