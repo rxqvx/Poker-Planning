@@ -1,5 +1,4 @@
 .espaco3dUser {
-  /* text-align: center; */
   width: 300px;
   height: 200px;
   perspective: 1000px;
@@ -8,7 +7,6 @@
 }
 
 .titleUserCardUser {
-  /* display:block; */
   margin-left: 60px;
   background: rgb(118, 128, 153);
   background: linear-gradient(90deg, rgba(118, 128, 153, 1) 0%, rgba(243, 184, 255, 1) 100%);
