@@ -35,7 +35,7 @@ function App() {
     color = localStorage.getItem('color')
     darkTheme = localStorage.getItem('themeDark')
   }
-  // console.log("darkteme: ", darkTheme)
+
   const [disable, setDisable] = React.useState(false);
   const [showVotes, setShowVotes] = React.useState(false);
   const [darkMode, setDarkMode] = React.useState(darkTheme);
