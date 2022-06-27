@@ -8,20 +8,19 @@ interface ICardProps {
     disable: boolean;
 }
 
-const Card: FC<ICardProps> = ({onClick,voteValue, disable }) => {
-    // const [disable, setDisable] = React.useState(false);
-    function blockCard(){
-        if(disable===true){
+const Card: FC<ICardProps> = ({ onClick, voteValue, disable }) => {
+    function blockCard() {
+        if (disable === true) {
             return styles.blockedButtonCardUser;
         }
         return styles.buttonCardUser;
-        
+
     }
 
     return (
-        <button disabled = {disable} onClick={onClick} value={voteValue} className={blockCard()}>
+        <button disabled={disable} onClick={onClick} value={voteValue} className={blockCard()}>
             {voteValue}
-        </button> 
+        </button>
     )
 }
 

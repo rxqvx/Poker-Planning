@@ -33,9 +33,8 @@ function App() {
   let color;
   if (typeof window !== 'undefined') {
     color = localStorage.getItem('color')
-    darkTheme = localStorage.getItem('themeDark')
+    darkTheme = localStorage.getItem('darkTheme')
   }
-  // console.log("darkteme: ", darkTheme)
   const [disable, setDisable] = React.useState(false);
   const [showVotes, setShowVotes] = React.useState(false);
   const [darkMode, setDarkMode] = React.useState(darkTheme);
@@ -46,7 +45,7 @@ function App() {
 
   React.useEffect(() => {
     setCor(darkMode ? '#414141' : '#f3f3f3');
-    localStorage.setItem('themeDark', darkMode)
+    localStorage.setItem('darkTheme', darkMode)
     localStorage.setItem('color', cor)
   }, [darkMode]);
 
@@ -79,8 +78,6 @@ function App() {
       })
     })
 
-    // socket.emit('disconnecting')
-
     socket.on('user-disconnect', payload => {
       const deletedUser = JSON.parse(payload);
       console.log("payload do user-disconnect: " + payload)
@@ -89,23 +86,18 @@ function App() {
     })
 
     socket.on('admin-disconnect', (payload: string) => {
-      // console.log("payload do admin-disconnect", payload)
       const newUsersSemOlderAdmin = JSON.parse(payload);
       setUsers(newUsersSemOlderAdmin);
       console.log("newUsersSemOlderAdmin", newUsersSemOlderAdmin)
       if (newUsersSemOlderAdmin.map(u => {
         if (u.nameUser === myUser.nameUser) {
           setMyUser(u);
-          // console.log("u:",u)
-          // console.log("myUser, agora virou admin: " + JSON.stringify(myUser));
         }
       }))
         console.log("Admin saiu, payload:" + payload)
     })
 
     socket.on('user-voted', payload => {
-      // console.log("userVoted: " + payload)
-
       const userVoted = JSON.parse(payload)
 
       if (!userVoted) return;
@@ -117,8 +109,6 @@ function App() {
         return u;
       }));
     });
-
-    // socket.emit('admin-show-vote',JSON.stringify(users.filter((User) => User.isAdmin==true)))
 
     socket.on('admin-shows', () => {
       setShowVotes(true);
@@ -134,10 +124,7 @@ function App() {
       console.log("O admin resetou os votos");
     })
 
-    // socket.emit('selected-card', users);
   }
-
-
 
   React.useEffect(() => {
     if (room) {
@@ -156,7 +143,6 @@ function App() {
   //-----------socketFim-------------------
 
   const handleClick = event => {
-    //vai pegar o valor que clicou
     const value = event.target.value;
 
     const newMyUser = { ...myUser, voteValue: (value), isVoted: true } as any
@@ -172,7 +158,6 @@ function App() {
     }))
 
     socket.emit('my-vote', JSON.stringify(newMyUser))
-
   }
 
   const emitAdminVote = (show: boolean) => {
@@ -185,12 +170,10 @@ function App() {
     <div className={styles.bodyUser}>
       <div style={{ backgroundColor: cor, height: '100%' }}>
         <header className={styles.headerRoomUser}>
-
           <div>
             <input type="checkbox" id={styles.toggleUser} checked={!darkMode} onChange={() => setDarkMode(state => !state)} />
             <label onClick={() => setDarkMode(state => !state)} htmlFor="toggleUser" className={styles.buttonUser} />
           </div>
-
         </header>
         <div className={styles.baloonRowUser}>
           <div className={styles.baloonUser}>
@@ -201,31 +184,22 @@ function App() {
           </div>
         </div>
         <div className={styles.blankGambiarra}>
-          {/* essa secao abaixo é pra apresentar as cartas de fibonacci */}
+          {/*cartas de fibonacci */}
           <section className={styles.divCardsUser}>
             {fibonnaciNumbers.map(value => (
               <Card key={value} onClick={handleClick} voteValue={value} disable={disable} />
             ))}
           </section>
-          {/* essa secao abaixo apresenta as cartas dos users */}
+          {/*cartas dos users */}
           <section className={styles.sectionUserCardsUser}>
-
-            {/* imprime as cartas dos usuarios */}
             {users.map((user, i) => <UserCard key={i} showVotes={showVotes} userName={user.nameUser} voteValue={user.voteValue} isVoted={user.isVoted} />)}
-
           </section>
-
           {myUser?.isAdmin ? <AdmControls setShowVotes={emitAdminVote} setUsers={setUsers} setDisable={setDisable} /> : null}
-
         </div>
-        {/* <footer className="rodapeRoomUser fixedUser"/> */}
         <footer className={styles.rodapeRoomUserfixedUser} />
       </div>
-
     </div>
-
   );
-
 }
 
 
