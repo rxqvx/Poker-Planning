@@ -24,7 +24,7 @@
     "**/*.ts",
     "**/*.js",
     "**/*.css"
-  ],
+, "src/pages/components/popularVote/index.tsx"  ],
   "exclude": [
     "node_modules"
   ]

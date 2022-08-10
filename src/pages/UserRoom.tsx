@@ -1,12 +1,13 @@
 import React from 'react';
+import io, { Socket } from 'socket.io-client'
+
+import PopularVote from './components/popularVote';
 import UserCard from './components/userCard/UserCard'
 import Card from './components/cardsFibonacci/CardFibonacci'
 import { IRoom } from '../schemas/RoomModel';
 import { IUser } from '../schemas/UserModel';
 import AdmControls from './components/admControls/AdmControls';
 import styles from '../styles/userRoom.module.css'
-
-import io, { Socket } from 'socket.io-client'
 
 let socket;
 
@@ -31,30 +32,39 @@ const getRoom = () => {
 function App() {
   let darkTheme;
   let color;
+  let boolColor
+  let boolDarkTheme
   if (typeof window !== 'undefined') {
     color = localStorage.getItem('color')
+    boolColor = (color =="true"); 
     darkTheme = localStorage.getItem('darkTheme')
+    boolDarkTheme = (darkTheme == "true");
   }
+  
   const [disable, setDisable] = React.useState(false);
   const [showVotes, setShowVotes] = React.useState(false);
-  const [darkMode, setDarkMode] = React.useState(darkTheme);
+  const [darkMode, setDarkMode] = React.useState(boolDarkTheme);
   const [users, setUsers] = React.useState([]);
   const [room, setRoom] = React.useState<IRoom>()
   const [myUser, setMyUser] = React.useState<IUser>()
-  const [cor, setCor] = React.useState(color);
-
-  React.useEffect(() => {
-    setCor(darkMode ? '#414141' : '#f3f3f3');
-    localStorage.setItem('darkTheme', darkMode)
-    localStorage.setItem('color', cor)
-  }, [darkMode]);
+  const [cor, setCor] = React.useState(boolColor);
+  const [showPopularVotes, setShowPopularVotes] = React.useState(false);
+  const [popVote, setPopVote] = React.useState('Não há votos');
 
   React.useEffect(() => {
     setRoom(getRoom())
     setUsers(getUsers())
     setMyUser(getMyUser())
-
+    
   }, []);
+
+  React.useEffect(() => {
+    setCor(darkMode ? '#414141' : '#f3f3f3');
+    localStorage.setItem('darkTheme', darkMode)
+    localStorage.setItem('color', cor)
+    console.log("popVote:", popVote)
+  }, [darkMode]);
+
 
   //-----------socketInicio-------------------
 
@@ -80,9 +90,8 @@ function App() {
 
     socket.on('user-disconnect', payload => {
       const deletedUser = JSON.parse(payload);
-      console.log("payload do user-disconnect: " + payload)
+      // console.log("payload do user-disconnect: " + payload)
       setUsers(oldUsers => oldUsers.filter(u => u.nameUser !== deletedUser.nameUser));
-
     })
 
     socket.on('admin-disconnect', (payload: string) => {
@@ -110,18 +119,25 @@ function App() {
       }));
     });
 
-    socket.on('admin-shows', () => {
+    socket.on('admin-shows', popVotes => {
       setShowVotes(true);
       setDisable(true);
-      console.log("O admin mostrou os votos")
+      setShowPopularVotes(true);
+
+      if(popVotes) {
+        setPopVote(JSON.parse(popVotes)); 
+      }
     })
+
     socket.on('admin-reseted', () => {
       setShowVotes(false);
       setDisable(false);
       setUsers(oldUsers => oldUsers.map(u => {
         return { ...u, voteValue: '-', isVoted: false }
       }));
-      console.log("O admin resetou os votos");
+      setShowPopularVotes(false);
+      setPopVote('');
+
     })
 
   }
@@ -160,10 +176,10 @@ function App() {
     socket.emit('my-vote', JSON.stringify(newMyUser))
   }
 
-  const emitAdminVote = (show: boolean) => {
+  const emitAdminVote = (show: boolean, popVotes: any) => {
     setShowVotes(show)
     setDisable(true);
-    socket.emit(show ? 'admin-show-vote' : 'admin-reset-votes');
+    socket.emit(show ? 'admin-show-vote' : 'admin-reset-votes', JSON.stringify(popVotes));
   }
 
   return (
@@ -194,7 +210,8 @@ function App() {
           <section className={styles.sectionUserCardsUser}>
             {users.map((user, i) => <UserCard key={i} showVotes={showVotes} userName={user.nameUser} voteValue={user.voteValue} isVoted={user.isVoted} />)}
           </section>
-          {myUser?.isAdmin ? <AdmControls setShowVotes={emitAdminVote} setUsers={setUsers} setDisable={setDisable} /> : null}
+          {showPopularVotes && <PopularVote popVote={popVote}/>}
+          {myUser?.isAdmin && <AdmControls setShowVotes={emitAdminVote} setUsers={setUsers} setDisable={setDisable} setShowPopularVotes={setShowPopularVotes} users={users} setPopVote={setPopVote}/> }
         </div>
         <footer className={styles.rodapeRoomUserfixedUser} />
       </div>

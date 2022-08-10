@@ -39,8 +39,8 @@ const socketController = (req , res) => {
         }
       })
 
-      socket.on('admin-show-vote',() =>{
-        socket.to(roomUserName).emit('admin-shows');
+      socket.on('admin-show-vote', payload =>{
+        socket.to(roomUserName).emit('admin-shows', payload);
       })
 
       socket.on('admin-reset-votes',async () =>{
