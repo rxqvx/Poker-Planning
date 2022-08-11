@@ -5,7 +5,6 @@ import { UserFactory } from './UserFactory';
 
 interface ISocket {
   connectionDataBase() : Promise<void>;
-  joinRoom(payload: string): void;
   myVote(payload : string) : Promise<void>;
   exitRoom(payload: string) : void;
   adminResetVotes(payload: string) : Promise<void>;
@@ -19,25 +18,26 @@ export class SocketHandler implements ISocket {
     await dbConnect();
   }
 
-  joinRoom = (payload : string) : void => {
-    const {room} = JSON.parse(payload)
-    this.socket.join(room.roomName)
-  }
-
   myVote = async (payload : string) : Promise<void> => {
-    const {user,room,voteValue} = JSON.parse(payload);
-    const update = await User.findOneAndUpdate({nameUser:user.nameUser,roomUserName:room.roomName},{isVoted:true,voteValue},{returnOriginal: false})
+    const { nameUser,roomUserName,voteValue } = JSON.parse(payload);
+    const update = await User.findOneAndUpdate({nameUser:nameUser,roomUserName:roomUserName},{isVoted:true,voteValue},{returnOriginal: false})
   }
 
   exitRoom = async (payload : string) : Promise<void> => {
-    const {userName,roomName} = JSON.parse(payload)
-    await UserFactory.deleteUser(userName, roomName)
+    const {nameUser,roomUserName} = JSON.parse(payload)
+    await UserFactory.deleteUser(nameUser, roomUserName)
   }
 
   adminResetVotes = async (payload : string) : Promise<void>=> {
-    const {roomName} = JSON.parse(payload);
-    const update = await User.updateMany({roomUserName:roomName},
+    const { roomUserName } = JSON.parse(payload);
+    const update = await User.updateMany({roomUserName:roomUserName},
     {isVoted:false,voteValue:0})
+  }
+
+  changeAdmin = async (payload : string) : Promise<IUser[]>=> {
+    const { nameUser,roomUserName : roomName } = JSON.parse(payload)
+    await UserFactory.changeAdmin(nameUser,roomName)
+    return await UserFactory.getUsersInRoom(roomName)
   }
 
 //   public adminChangedCard = (payload : string) : void => {

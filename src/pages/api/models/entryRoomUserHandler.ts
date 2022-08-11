@@ -49,5 +49,8 @@ export class handlerAPI implements IHandler{
   async getUsersInRoom(roomName: string) : Promise<IUser[]>{
     return await UserFactory.getUsersInRoom(roomName);
   }
+  async getUserInRoom(userName: string,roomName: string) : Promise<IUser>{
+    return await UserFactory.getUserInRoom(userName,roomName);
+  }
 
 }

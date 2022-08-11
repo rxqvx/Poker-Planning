@@ -1,0 +1,130 @@
+.bodyUser {
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  box-sizing: content-box;
+}
+
+/* 
+.div-users-cardsUser {
+  display:flex;
+  justify-content: space-between;
+  padding: 2% 10%;
+} */
+
+.divCardsUser {
+  display: flex;
+  justify-content: space-between;
+  padding: 3% 8%;
+}
+
+.baloonRowUser {
+  padding: 0px 150px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.baloonUser {
+  margin-top: 40px;
+  padding-left: 70px;
+  display: flex;
+  justify-content: flex-start;
+  background: rgb(65, 87, 142);
+  background: linear-gradient(90deg, rgba(65, 87, 142, 1) 0%, rgb(212, 0, 255) 100%);
+  color: rgb(255, 255, 255);
+  margin-bottom: 1rem;
+  border-radius: 10px 90px;
+  flex: 1;
+  max-width: 700px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+.rodapeRoomUser {
+  width: 100%;
+  padding: 1% 1%;
+  /* background-image: linear-gradient(to right, rgb(149, 179, 255), rgba(	189, 143, 255 ,1)); */
+  background: rgb(65, 87, 142);
+  background: linear-gradient(90deg, rgba(65, 87, 142, 1) 0%, rgb(212, 0, 255) 100%);
+}
+
+.headerRoomUser {
+  width: 100%;
+  padding: 1% 1%;
+  text-align: center;
+  /* background-image: linear-gradient(to right, rgb(149, 179, 255), rgba(	189, 143, 255 ,1)); */
+  background: rgb(65, 87, 142);
+  background: linear-gradient(90deg, rgba(65, 87, 142, 1) 0%, rgb(212, 0, 255) 100%);
+}
+
+/* .rodapeRoomUser, fixedUser {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+} */
+.rodapeRoomUserfixedUser {
+  width: 100%;
+  padding: 1% 1%;
+  /* background-image: linear-gradient(to right, rgb(149, 179, 255), rgba(	189, 143, 255 ,1)); */
+  background: rgb(65, 87, 142);
+  background: linear-gradient(90deg, rgba(65, 87, 142, 1) 0%, rgb(212, 0, 255) 100%);
+  position: absolute;
+  bottom: 1;
+  left: 0;
+  height: 50px;
+}
+
+.sectionUserCardsUser {
+  position: relative;
+  /* quebrar linha das cartas abaixo */
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  /* align-items: flex-start; */
+
+}
+
+
+/* -----botao do dark e light mode----- */
+#toggleUser {
+  display: none;
+}
+
+.buttonUser {
+  display: inline-block;
+  width: 85px;
+  height: 35.5px;
+  background-color: #fff;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+}
+
+.buttonUser::after {
+  content: url('../../public/lua.svg');
+  /* content: url('../../public/sol.svg'); comentado, pois como está usando o localstorage não se sabe qual o tema que esta, logo a imagem estaria poderia estar incorreta*/
+  width: 35px;
+  height: 35px;
+  background-color: rgb(212, 0, 255);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0 0.25);
+  position: relative;
+  display: grid;
+  place-content: center;
+  line-height: 0;
+  transition: background-color 1s, transform 1s ease-in;
+}
+
+#toggleUser:checked+.buttonUser::after {
+  content: url('../../public/lua.svg');
+  background-color: rgba(65, 87, 142, 1);
+  transform: translateX(50px) rotate(360deg);
+}
+
+.blankGambiarra {
+  height: 100vh;
+}

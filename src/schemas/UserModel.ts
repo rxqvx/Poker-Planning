@@ -4,8 +4,8 @@ export interface IUser extends Document{
     nameUser:string,
     roomUserName: string,
     isVoted: boolean,
-    voteValue: number,
-    isAdmin: boolean
+    voteValue: String,
+    isAdmin: boolean,
 }
 
 const UserSchema =  new Schema<IUser>({
@@ -22,13 +22,14 @@ const UserSchema =  new Schema<IUser>({
         default: false
     },
     voteValue:{
-        type: Number,
-        default: 0
+        type: String,
+        default: '-'
     },
     isAdmin:{
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
+
   })
 
 export const User = mongoose.models.User || mongoose.model('User', UserSchema);
