@@ -1,22 +1,19 @@
-version: "3"
+version: '3.7'
+
 services:
-  poker-plaining-mongo:
-    image: mongo
-    restart: always
-    # volumes:
-    #     - ./data:./
   poker-plaining:
     build:
       context: .
-    restart: always
-    volumes:
-      - ./src:/app/src
     command: npm run dev
     ports:
       - '3000:3000'
+    volumes:
+      - './src:/app/src'
+      - './public:/app/public'
     environment:
-      SERVER_PORT: 3000
-      MONGO_URL: 'mongodb://poker-plaining-mongo/poker-plaining'
-    depends_on:
-      - poker-plaining-mongo
+        MONGO_DB_URL: 'mongodb://mongo-poker-plaining/poker-plaining'
 
+  mongo-poker-plaining:
+    image: mongo
+    ports:
+      - '27017:27017'
