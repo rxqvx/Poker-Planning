@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  poker-plaining:
+    build:
+      context: .
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - './src:/app/src'
+      - './public:/app/public'
+    environment:
+        MONGO_DB_URL: 'mongodb://mongo-poker-plaining/poker-plaining'
+
+  mongo-poker-plaining:
+    image: mongo
+    ports:
+      - '27017:27017'

@@ -1,30 +1,11 @@
 import mongoose from 'mongoose'
+import { environment } from './common/environment';
 
-const MONGODB_URI = "mongodb+srv://root:pZje0MrezMidJur0@cluster0.tu0eq.mongodb.net/pp"
-
-  let cached = global.mongoose
-
-  if (!cached) {
-    cached = global.mongoose = { conn: null, promise: null }
-  }
-
-  export async function dbConnect () {
-    if (cached.conn) {
-      return cached.conn
-    }
-
-    if (!cached.promise) {
-      const opts = {
+export async function dbConnect () {
+    const opts = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         bufferCommands: false,
-      }
-
-      cached.promise = mongoose.connect(MONGODB_URI, opts).then(mongoose => {
-        return mongoose
-      })
     }
-    cached.conn = await cached.promise
-    return cached.conn
-  }
-
+    return await mongoose.connect(environment.mongoDb.url, opts)
+}
